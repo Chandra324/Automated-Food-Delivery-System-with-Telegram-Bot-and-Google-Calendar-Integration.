@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery System</title>
+</head>
+<body>
+    <h1>Food Delivery System</h1>
+    <form id="itemForm">
+        <input type="text" id="name" placeholder="Item Name" required />
+        <input type="number" id="price" placeholder="Price" required />
+        <input type="number" id="quantity" placeholder="Quantity" required />
+        <button type="submit">Add Item</button>
+    </form>
+    <ul id="itemsList"></ul>
+    <script>
+        async function fetchItems() {
+            const response = await fetch('/api/food/items');
+            const items = await response.json();
+            const list = document.getElementById('itemsList');
+            list.innerHTML = items.map(item => `<li>${item.name} - $${item.price} (x${item.quantity})</li>`).join('');
+        }
+
+        document.getElementById('itemForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const quantity = document.getElementById('quantity').value;
+
+            await fetch('/api/food/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, price, quantity })
+            });
+
+            fetchItems();
+        });
+
+        fetchItems();
+    </script>
+</body>
+</html>
